@@ -40,4 +40,25 @@ function addShareExtToStorage(extension, callback)
     extensions[extension.id] = extension;
     chrome.storage.local.set({"extensions": extensions}, callback);
   });
-}
+};
+
+/*
+Function:  receiveShareExtRequest
+Params:    - request - details of ShareExtension requested
+           - sender - object containing the id of the extension which sent the
+           request
+Returns:   Nothing.
+Operation: Called when a ShareExtensionRequest message is received. Verifies the
+           request and adds it to storage.
+           TODO: add success/failure response to original extension.
+*/
+function receiveShareExtRequest(request, sender)
+{
+  var ShareExtension = {
+    id = request.id || sender.id,
+    name = request.name || DEFAULT_NAME, // TODO: add DEFAULT_NAME constant
+    icon = request.icon || DEFAULT_ICON, // TODO: add DEFAULT_ICON constant
+    extensionId = sender.id
+  };
+  addShareExtToStorage(ShareExtension);
+};
