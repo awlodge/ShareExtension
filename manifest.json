@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+
+  "name": "Share",
+  "description": "Extension allowing simple extensible one-click sharing of a page from the browser.",
+  "version": "0.0",
+
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+
+  "browser_action": {
+    "default_icon": "",
+    "default_popup": "popup.html"
+  }
+}
