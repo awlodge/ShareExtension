@@ -1,22 +1,26 @@
 /*
 Function:  getShareServiceFromStorage
-Params:    - id - id of the ShareService to retrieve from storage. Set to null to
-           retrieve all ShareServices
-           - callback - function to call on retrieved ShareService object.
+Params:    - details - object containing the id and extensionId of the
+           ShareService object to retrieve from storage. The extensionId field is
+           required, if the id field is omitted it defaults to the extensionId.
+           Set to null to retrieve all ShareService objectss.
+           - callback - function to call on retrieved ShareService object or
+           object of ShareService objects if all are retireved.
 Returns:   Nothing.
 Operation: Retrieves a specified ShareService object from storage and calls a
            callback function on the retrieved object. If the requested object is
-           not found, the callback will be called with a null argument.
+           not found, the callback will be called with no argument.
 */
-function getShareServiceFromStorage(id, callback)
+function getShareServiceFromStorage(details, callback)
 {
   chrome.storage.sync.get("services", function(obj) {
-    if (id == null) {
+    if (details == null) {
       var returnObject = obj.services
     }
     else {
       console.log("Getting ShareService: " + id);
-      if (obj.services[id] == undefined) {
+      var key = details.extensionId + " " + (details.id || details.extensionId);
+      if (obj.services[key] == undefined) {
         console.warn("ShareService not found: " + id);
       };
       var returnObject = obj.services[id];
@@ -37,10 +41,29 @@ function addShareServiceToStorage(service, callback)
 {
   console.log("Storing ShareService", service);
   getShareServiceFromStorage(null, function(services) {
-    services[service.id] = service;
-    chrome.storage.local.set({"services": services}, callback);
+    var key = service.extensionId + " " + service.id
+    services[key] = service;
+    chrome.storage.sync.set({"services": services}, callback);
   });
 };
+
+/*
+Function:  removeShareServiceFromStorage
+Params:    - service
+Returns:   Nothing.
+Operation: Removes a ShareService object from the set of ShareService objects in
+           storage.
+*/
+function removeShareServiceFromStorage(service)
+{
+  console.log("Removing ShareService", service);
+  getShareServiceFromStorage(null, function(services) {
+    var key = service.extensionId + " " + service.id;
+    delete services[key];
+    chrome.storage.sync.set({"services": services})
+  });
+};
+
 
 /*
 Function:  receiveShareServiceRequest
@@ -56,10 +79,36 @@ function receiveShareServiceRequest(request, sender)
 {
   console.log("Received ShareService request from extension", sender.id, request);
   var ShareService = {
-    id = request.id || sender.id,
-    name = request.name || DEFAULT_NAME, // TODO: add DEFAULT_NAME constant
-    icon = request.icon || DEFAULT_ICON, // TODO: add DEFAULT_ICON constant
-    extensionId = sender.id
+    id: request.id || sender.id,
+    name: request.name || DEFAULT_NAME, // TODO: add DEFAULT_NAME constant
+    icon: request.icon || DEFAULT_ICON, // TODO: add DEFAULT_ICON constant
+    extensionId: sender.id
   };
   addShareServiceToStorage(ShareService);
+};
+
+/*
+Function:  sendShareMessage
+Params:    - service - the ShareService object used for this message.
+Returns:   Nothing.
+Operation: Gets the active tab and sends a message to the extension of the given
+           share service. The message contains the ShareService id and the tab's
+           url, title and favicon.
+TODO: Send the tab's content too.
+TODO: Add response message from the external extension which allows a response to
+      be displayed in the popup (with a success or failure message).
+*/
+function sendShareMessage(service)
+{
+  chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
+    var tab = tabs[0];
+    var message = {
+      id: service.id,
+      url: tab.url,
+      title: tab.title,
+      favIconUrl: tab.favIconUrl
+    };
+    console.log("Sending share message", message, service);
+    chrome.runtime.sendMessage(service.extensionId, message);
+  });
 };
