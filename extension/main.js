@@ -1,25 +1,25 @@
 /*
-Function:  getShareExtFromStorage
-Params:    - id - id of the ShareExtension to retrieve from storage. Set to null to
-           retrieve all ShareExtensions
-           - callback - function to call on retrieved ShareExtension object.
+Function:  getShareServiceFromStorage
+Params:    - id - id of the ShareService to retrieve from storage. Set to null to
+           retrieve all ShareServices
+           - callback - function to call on retrieved ShareService object.
 Returns:   Nothing.
-Operation: Retrieves a specified ShareExtension object from storage and calls a
+Operation: Retrieves a specified ShareService object from storage and calls a
            callback function on the retrieved object. If the requested object is
            not found, the callback will be called with a null argument.
 */
-function getShareExtFromStorage(id, callback)
+function getShareServiceFromStorage(id, callback)
 {
-  chrome.storage.sync.get("extensions", function(obj) {
+  chrome.storage.sync.get("services", function(obj) {
     if (id == null) {
-      var returnObject = obj.extensions;
+      var returnObject = obj.services
     }
     else {
-      console.log("Getting extension: " + id);
-      if (obj.extensions[id] == undefined) {
-        console.warn("Extension not found: " + id);
+      console.log("Getting ShareService: " + id);
+      if (obj.services[id] == undefined) {
+        console.warn("ShareService not found: " + id);
       };
-      var returnObject = obj.extensions[id];
+      var returnObject = obj.services[id];
     };
 
     callback(returnObject);
@@ -27,38 +27,39 @@ function getShareExtFromStorage(id, callback)
 };
 
 /*
-Function:  addShareExtToStorage
-Params:    - extension - ShareExtension object to be added to storage.
+Function:  addShareServiceToStorage
+Params:    - service - ShareService object to be added to storage.
            - callback - optional function to be called when the storing is done.
 Returns:   Nothing.
-Operation: Adds the details of a ShareExtension object to storage.
+Operation: Adds the details of a ShareService object to storage.
 */
-function addShareExtToStorage(extension, callback)
+function addShareServiceToStorage(service, callback)
 {
-  console.log("Storing extension", extension);
-  getShareExtFromStorage(null, function(extensions) {
-    extensions[extension.id] = extension;
-    chrome.storage.local.set({"extensions": extensions}, callback);
+  console.log("Storing ShareService", service);
+  getShareServiceFromStorage(null, function(services) {
+    services[service.id] = service;
+    chrome.storage.local.set({"services": services}, callback);
   });
 };
 
 /*
-Function:  receiveShareExtRequest
-Params:    - request - details of ShareExtension requested
-           - sender - object containing the id of the extension which sent the
+Function:  receiveShareServiceRequest
+Params:    - request - details of ShareService requested
+           - sender - object containing the id of the ShareService which sent the
            request
 Returns:   Nothing.
-Operation: Called when a ShareExtensionRequest message is received. Verifies the
+Operation: Called when a ShareService request message is received. Verifies the
            request and adds it to storage.
-           TODO: add success/failure response to original extension.
+           TODO: add success/failure response to original service.
 */
-function receiveShareExtRequest(request, sender)
+function receiveShareServiceRequest(request, sender)
 {
-  var ShareExtension = {
+  console.log("Received ShareService request from extension", sender.id, request);
+  var ShareService = {
     id = request.id || sender.id,
     name = request.name || DEFAULT_NAME, // TODO: add DEFAULT_NAME constant
     icon = request.icon || DEFAULT_ICON, // TODO: add DEFAULT_ICON constant
     extensionId = sender.id
   };
-  addShareExtToStorage(ShareExtension);
+  addShareServiceToStorage(ShareService);
 };
