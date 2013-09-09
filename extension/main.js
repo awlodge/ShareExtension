@@ -118,3 +118,24 @@ function sendShareMessage(service)
     chrome.runtime.sendMessage(service.extensionId, message);
   });
 };
+
+/*
+Function:  sendPingMessage
+Params:    - service - the ShareService object to be pinged.
+Returns:   Nothing.
+Operation: Sends a ping to the service to check it is still active. The message
+           contains the following fields:
+           - type - the message type, which is "ping",
+           - id - the ShareService id.
+TODO: Add response message from the external extension.
+*/
+function sendPingMessage(service)
+{
+  var message = {
+    type: MESSAGE_TYPES.PING, // TODO: Add a MESSAGE_TYPE constant
+    id: service.id,
+  };
+
+  console.log("Pinging", message, service);
+  chrome.runtime.sendMessage(service.extensionId, message);
+};
