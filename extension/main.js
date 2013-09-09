@@ -92,8 +92,12 @@ Function:  sendShareMessage
 Params:    - service - the ShareService object used for this message.
 Returns:   Nothing.
 Operation: Gets the active tab and sends a message to the extension of the given
-           share service. The message contains the ShareService id and the tab's
-           url, title and favicon.
+           share service. The message contains the following fields:
+           - type - the message type, which is "share-request",
+           - id - the ShareService id,
+           - url - the URL of the page,
+           - title - the title of the page,
+           - favicon - the favicon of the page.
 TODO: Send the tab's content too.
 TODO: Add response message from the external extension which allows a response to
       be displayed in the popup (with a success or failure message).
@@ -103,11 +107,13 @@ function sendShareMessage(service)
   chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
     var tab = tabs[0];
     var message = {
+      type: MESSAGE_TYPES.SHARE_REQUEST, // TODO: Add a MESSAGE_TYPE constant
       id: service.id,
       url: tab.url,
       title: tab.title,
       favIconUrl: tab.favIconUrl
     };
+
     console.log("Sending share message", message, service);
     chrome.runtime.sendMessage(service.extensionId, message);
   });
