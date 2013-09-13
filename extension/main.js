@@ -11,8 +11,7 @@ Operation: Retrieves a specified ShareService object from storage and calls a
            callback function on the retrieved object. If the requested object is
            not found, the callback will be called with no argument.
 */
-function getShareServiceFromStorage(details, callback)
-{
+function getShareServiceFromStorage(details, callback) {
   chrome.storage.sync.get("services", function(obj) {
     if (details == null) {
       var returnObject = obj.services
@@ -37,8 +36,7 @@ Params:    - service - ShareService object to be added to storage.
 Returns:   Nothing.
 Operation: Adds the details of a ShareService object to storage.
 */
-function addShareServiceToStorage(service, callback)
-{
+function addShareServiceToStorage(service, callback) {
   console.log("Storing ShareService", service);
   getShareServiceFromStorage(null, function(services) {
     var key = service.extensionId + " " + service.id
@@ -54,8 +52,7 @@ Returns:   Nothing.
 Operation: Removes a ShareService object from the set of ShareService objects in
            storage.
 */
-function removeShareServiceFromStorage(service)
-{
+function removeShareServiceFromStorage(service) {
   console.log("Removing ShareService", service);
   getShareServiceFromStorage(null, function(services) {
     var key = service.extensionId + " " + service.id;
@@ -63,7 +60,6 @@ function removeShareServiceFromStorage(service)
     chrome.storage.sync.set({"services": services})
   });
 };
-
 
 /*
 Function:  receiveShareServiceRequest
@@ -75,8 +71,7 @@ Operation: Called when a ShareService request message is received. Verifies the
            request and adds it to storage.
            TODO: add success/failure response to original service.
 */
-function receiveShareServiceRequest(request, sender)
-{
+function receiveShareServiceRequest(request, sender) {
   console.log("Received ShareService request from extension", sender.id, request);
   var ShareService = {
     id: request.id || sender.id,
@@ -102,8 +97,7 @@ TODO: Send the tab's content too.
 TODO: Add response message from the external extension which allows a response to
       be displayed in the popup (with a success or failure message).
 */
-function sendShareMessage(service)
-{
+function sendShareMessage(service) {
   chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
     var tab = tabs[0];
     var message = {
@@ -127,15 +121,42 @@ Operation: Sends a ping to the service to check it is still active. The message
            contains the following fields:
            - type - the message type, which is "ping",
            - id - the ShareService id.
-TODO: Add response message from the external extension.
 */
-function sendPingMessage(service)
-{
+function sendPingMessage(service) {
   var message = {
     type: MESSAGE_TYPES.PING, // TODO: Add a MESSAGE_TYPE constant
     id: service.id,
   };
 
   console.log("Pinging", message, service);
-  chrome.runtime.sendMessage(service.extensionId, message);
+  chrome.runtime.sendMessage(service.extensionId, message, function(response) {
+    pingMessageResponse(service, response);
+  });
+};
+
+/*
+Function:  pingMessageResponse
+Params:    - service - the ShareService object that was pinged.
+           - response - the response received from the external extension.
+Returns:   Nothing.
+Operation: Checks that the extension pinged is still there and removes it if it is
+           not or if its response indicates that it should be removed.
+*/
+function pingMessageResponse(service, response) {
+  var removeService = false;
+  if (chrome.runtime.lastError) {
+    if (chrome.runtime.lastError.message == EXT_NOT_FOUND_ERROR) {
+      // TODO: Add EXT_NOT_FOUND_ERROR constant
+      removeService = true;
+    };
+  };
+  if (response) {
+    if (response.remove) {
+      removeService = true;
+    };
+  };
+
+  if (removeService) {
+    removeShareServiceFromStorage(service);
+  };
 };
