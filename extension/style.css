@@ -1,0 +1,47 @@
+body
+{
+  font-family: arial;
+  width: 450px;
+  min-height: 100px;
+}
+h1
+{
+  font-size: 16px;
+  font-weight: normal;
+  border-bottom: 1px solid;
+  padding: 5px;
+  border-color: #33b5e5;
+  color: #33b5e5;
+}
+table
+{
+  border-spacing: 10px;
+  font-size: 12px;
+  table-layout: fixed;
+}
+img
+{
+  padding: 5px;
+}
+td.service-button
+{
+  background-color: white;
+  border: 1px solid;
+  border-color: #33b5e5;
+  padding: 5px;
+  text-align: center;
+  width: 80px;
+  height: 100px;
+}
+img.service-icon
+{
+  height: 48px;
+  width: 48px;
+}
+img.top-button
+{
+  height: 19px;
+  width: 19px;
+  float: right;
+  padding: 2px
+}
