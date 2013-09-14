@@ -66,12 +66,13 @@ Function:  receiveShareServiceRequest
 Params:    - request - details of ShareService requested
            - sender - object containing the id of the ShareService which sent the
            request
+           - sendResponse - function to call to send response back to message
+           sender.
 Returns:   Nothing.
 Operation: Called when a ShareService request message is received. Verifies the
            request and adds it to storage.
-           TODO: add success/failure response to original service.
 */
-function receiveShareServiceRequest(request, sender) {
+function receiveShareServiceRequest(request, sender, sendResponse) {
   console.log("Received ShareService request from extension", sender.id, request);
   var ShareService = {
     id: request.id || sender.id,
@@ -79,7 +80,30 @@ function receiveShareServiceRequest(request, sender) {
     icon: request.icon || DEFAULT_ICON, // TODO: add DEFAULT_ICON constant
     extensionId: sender.id
   };
-  addShareServiceToStorage(ShareService);
+
+  var rc = 1;
+  var message;
+
+  if (typeof(ShareService.id) != "string") {
+    rc = 0;
+    message = REQUEST_MESSAGES.ID_TYPE_ERROR // TODO: add REQUEST_MESSAGES object
+  }
+  else if (typeof(ShareService.name) != "string") {
+    rc = 0;
+    message = REQUEST_MESSAGES.NAME_TYPE_ERROR
+  }
+  else if (typeof(ShareService.icon) != "string") {
+    rc = 0;
+    message = REQUEST_MESSAGES.ICON_TYPE_ERROR
+  }
+  // TODO: add verification of icon url and that id is not duplicate
+  // (requires async)
+
+  if (rc == 1) {
+    addShareServiceToStorage(ShareService);
+    message = REQUEST_MESSAGES.SUCCESS;
+  };
+  sendResponse({status: rc, message: message});
 };
 
 /*
