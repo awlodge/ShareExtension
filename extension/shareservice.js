@@ -38,7 +38,7 @@ function ShareService(details) {
   Operation: Returns the key used when the ShareService object is stored in
              Chrome's storage.
   */
-  function getKey() {
+  this.prototype.getKey = function() {
     return this.extensionId + " " + this.id;
   };
 
@@ -75,7 +75,11 @@ function ShareService(details) {
 
   /*
   Function:  sendShareMessage
-  Params:    None.
+  Params:    - responseCallback - optional function to be called on a response to
+             the message. The function should take a response object as its
+             parameter. The response will have two properties, a boolean "success"
+             indicating whether or not the message was successfully dealt with,
+             and a string "message" which is a response to display to the user.
   Returns:   Nothing.
   Operation: Gets the active tab and sends a message to the extension of the
              given share service. The message contains the following fields:
@@ -84,15 +88,13 @@ function ShareService(details) {
              - url - the URL of the page,
              - title - the title of the page,
              - favicon - the favicon of the page.
-  TODO: Send the tab's content too.
-  TODO: Add response message from the external extension which allows a response
-        to be displayed in the popup (with a success or failure message).
+  TODO: [Future Dev] Send the tab's content too.
   */
-  this.prototype.sendShareMessage = function() {
+  this.prototype.sendShareMessage = function(responseCallback) {
     chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
       var tab = tabs[0];
       var message = {
-        type: MESSAGE_TYPES.SHARE_REQUEST, // TODO: Add a MESSAGE_TYPE constant
+        type: MESSAGE_TYPES.SHARE_REQUEST,
         id: this.id,
         url: tab.url,
         title: tab.title,
@@ -100,7 +102,7 @@ function ShareService(details) {
       };
 
       console.log("Sending share message", message, this);
-      chrome.runtime.sendMessage(this.extensionId, message);
+      chrome.runtime.sendMessage(this.extensionId, message, responseCallback);
     });
   };
 
@@ -115,7 +117,7 @@ function ShareService(details) {
   */
   this.prototype.sendPingMessage = function() {
     var message = {
-      type: MESSAGE_TYPES.PING, // TODO: Add a MESSAGE_TYPE constant
+      type: MESSAGE_TYPES.PING,
       id: this.id,
     };
 
@@ -136,7 +138,6 @@ function ShareService(details) {
     var removeService = false;
     if (chrome.runtime.lastError) {
       if (chrome.runtime.lastError.message == EXT_NOT_FOUND_ERROR) {
-        // TODO: Add EXT_NOT_FOUND_ERROR constant
         removeService = true;
       };
     };
@@ -204,8 +205,8 @@ function receiveShareServiceRequest(request, sender, sendResponse) {
   console.log("Received ShareService request from extension", sender.id, request);
   var details = {
     id: request.id || sender.id,
-    name: request.name || DEFAULT_NAME, // TODO: add DEFAULT_NAME constant
-    icon: request.icon || DEFAULT_ICON, // TODO: add DEFAULT_ICON constant
+    name: request.name || DEFAULT_NAME,
+    icon: request.icon || DEFAULT_ICON,
     extensionId: sender.id
   };
 
@@ -214,7 +215,7 @@ function receiveShareServiceRequest(request, sender, sendResponse) {
 
   if (typeof(details.id) != "string") {
     rc = 0;
-    message = REQUEST_MESSAGES.ID_TYPE_ERROR // TODO: add REQUEST_MESSAGES object
+    message = REQUEST_MESSAGES.ID_TYPE_ERROR
   }
   else if (typeof(details.name) != "string") {
     rc = 0;

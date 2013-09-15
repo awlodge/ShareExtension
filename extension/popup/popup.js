@@ -39,7 +39,7 @@ function createShareButton(service) {
   };
 
   cell.onclick = function() {
-    sendShareMessage(service);
+    service.sendShareMessage(displayResponseMessage);
   };
 
   return cell;
@@ -68,4 +68,16 @@ function addCell(cell) {
   };
 
   row.appendChild(cell);
+};
+
+/*
+Function:  displayResponseMessage
+Params:    - response - object containing the response.
+Returns:   Nothing.
+Operation: Takes a response from the ShareService extension and displays it in a
+           temporary box in the popup.
+TODO: Add functionality.
+*/
+function displayResponseMessage(response) {
+  return;
 };
