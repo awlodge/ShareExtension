@@ -81,3 +81,12 @@ TODO: Add functionality.
 function displayResponseMessage(response) {
   return;
 };
+
+document.addEventListener("DOMContentLoaded", function() {
+  getShareServiceFromStorage(null, function(services) {
+    for (var key in services) {
+      var button = createShareButton(services[key]);
+      addCell(button);
+    };
+  });
+});
