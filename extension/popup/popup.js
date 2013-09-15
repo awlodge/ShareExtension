@@ -5,7 +5,6 @@ Returns:   HTML "td" element for the button for the service.
 Operation: Creates a button cell for the specified service. The cell contains the
            service's title and icon and, when clicked, sends a share message to the
            service's extension.
-TODO: Add onclick functionality.
 */
 function createShareButton(service) {
   var cell = document.createElement("td");
@@ -24,6 +23,24 @@ function createShareButton(service) {
   cell.appendChild(image);
   cell.appendChild(document.createElement("br"));
   cell.appendChild(text);
+
+  cell.onmouseover = function() {
+    cell.style.borderColor = "#33b5e5";
+  };
+  cell.onmouseout = function() {
+    cell.style.borderColor = "#ffffff";
+  };
+
+  cell.onmousedown = function() {
+    cell.style.backgroundColor = "#33b5e5";
+  };
+  cell.onmouseup = function() {
+    cell.style.backgroundColor = "";
+  };
+
+  cell.onclick = function() {
+    sendShareMessage(service);
+  };
 
   return cell;
 };
