@@ -29,3 +29,6 @@ const REQUEST_MESSAGES = {
 // Name and period parameters for the alarm the pings the services periodically.
 const PING_ALARM_NAME = "ping-alarm";
 const PING_ALARM_PERIOD = 30;
+
+// Time in milliseconds to display response to a share request.
+const RESPONSE_MESSAGE_TIMEOUT = 2000;

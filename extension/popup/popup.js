@@ -97,10 +97,15 @@ Params:    - response - object containing the response.
 Returns:   Nothing.
 Operation: Takes a response from the ShareService extension and displays it in a
            temporary box in the popup.
-TODO: Add functionality.
 */
 function displayResponseMessage(response) {
-  return;
+  var message_display = document.createElement("div");
+  message_display.setAttribute("id", "message");
+  message_display.innerText = response.message;
+  document.body.appendChild(message_display);
+  setTimeout(function() {
+    message_display.parentNode.removeChild(message_display)},
+    RESPONSE_MESSAGE_TIMEOUT);
 };
 
 document.addEventListener("DOMContentLoaded", function() {
