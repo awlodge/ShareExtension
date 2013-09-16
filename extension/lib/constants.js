@@ -32,3 +32,8 @@ const PING_ALARM_PERIOD = 30;
 
 // Time in milliseconds to display response to a share request.
 const RESPONSE_MESSAGE_TIMEOUT = 2000;
+
+// Colors for popup
+const DEFAULT_COLOR = "#33b5e5";
+const DEFAULT_COLOR_TRANSLUCENT = "rgba(51, 181, 229, 0.6)";
+const BACKGROUND_COLOR = "white";

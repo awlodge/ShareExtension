@@ -1,4 +1,29 @@
 /*
+Function:  buttonPress
+Params:    - onclick - Function to call when button is clicked.
+Returns:   Nothing.
+Operation: Adds consistent onmouse* events to a button.
+*/
+Element.prototype.buttonPress = function(onclick) {
+
+  this.onmouseover = function() {
+    this.style.borderColor = DEFAULT_COLOR;
+  };
+  this.onmouseout = function() {
+    this.style.borderColor = BACKGROUND_COLOR;
+  };
+
+  this.onmousedown = function() {
+    this.style.backgroundColor = DEFAULT_COLOR_TRANSLUCENT;
+  };
+  this.onmouseup = function() {
+    this.style.backgroundColor = BACKGROUND_COLOR;
+  };
+
+  this.onclick = onclick;
+};
+
+/*
 Function:  createShareButton
 Params:    - service - ShareService object to create the button for.
 Returns:   HTML "td" element for the button for the service.
@@ -24,23 +49,9 @@ function createShareButton(service) {
   cell.appendChild(document.createElement("br"));
   cell.appendChild(text);
 
-  cell.onmouseover = function() {
-    cell.style.borderColor = "#33b5e5";
-  };
-  cell.onmouseout = function() {
-    cell.style.borderColor = "#ffffff";
-  };
-
-  cell.onmousedown = function() {
-    cell.style.backgroundColor = "#33b5e5";
-  };
-  cell.onmouseup = function() {
-    cell.style.backgroundColor = "";
-  };
-
-  cell.onclick = function() {
+  cell.buttonPress(function() {
     service.sendShareMessage(displayResponseMessage);
-  };
+  });
 
   return cell;
 };
@@ -110,8 +121,8 @@ function displayResponseMessage(response) {
 
 document.addEventListener("DOMContentLoaded", function() {
   // Add listeners for refresh and options buttons (TODO: options)
-  document.getElementById("refresh").addEventListener("click", function() {
-    console.log("Refresh button clicked")
+  document.getElementById("refresh").buttonPress(function() {
+    console.log("Refresh button clicked");
     pingAllServices();
   });
 
