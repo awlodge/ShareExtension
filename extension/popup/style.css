@@ -27,6 +27,7 @@ td.service-button
 {
   border: 1px solid;
   border-color: #ffffff;
+  border-radius: 10px;
   padding: 5px;
   text-align: center;
   width: 80px;
