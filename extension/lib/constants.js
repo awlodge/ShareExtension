@@ -15,6 +15,8 @@ const DEFAULT_ICON = "/icons/icon.png";
 const EXT_NOT_FOUND_ERROR = "Could not establish connection. " +
 	"Receiving end does not exist.";
 
+// Messages sent back to external extension in response to a request to add a new
+// ShareService.
 const REQUEST_MESSAGES = {
 	SUCCESS: "The ShareService was added successfully.",
 	ID_TYPE_ERROR: "The 'id' field is not a string.",
@@ -23,3 +25,7 @@ const REQUEST_MESSAGES = {
 	ID_NOT_UNIQUE: "The 'id' is not unique.",
 	ICON_NOT_FOUND: "The given icon could not be found."
 };
+
+// Name and period parameters for the alarm the pings the services periodically.
+const PING_ALARM_NAME = "ping-alarm";
+const PING_ALARM_PERIOD = 30;
