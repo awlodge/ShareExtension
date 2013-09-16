@@ -71,6 +71,27 @@ function addCell(cell) {
 };
 
 /*
+Function:  refreshButtons
+Params:    None.
+Returns:   Nothing.
+Operation: Clears any present buttons, then gets the active ShareServices from
+           storage and displays buttons for them all.
+*/
+function refreshButtons() {
+  var table = document.getElementById("button-table");
+  while (table.rows.length > 0) {
+    table.deleteRow(0);
+  };
+
+  getShareServiceFromStorage(null, function(services) {
+    for (var key in services) {
+      var button = createShareButton(services[key]);
+      addCell(button);
+    };
+  });
+};
+
+/*
 Function:  displayResponseMessage
 Params:    - response - object containing the response.
 Returns:   Nothing.
@@ -83,10 +104,18 @@ function displayResponseMessage(response) {
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-  getShareServiceFromStorage(null, function(services) {
-    for (var key in services) {
-      var button = createShareButton(services[key]);
-      addCell(button);
+  // Add listeners for refresh and options buttons (TODO: options)
+  document.getElementById("refresh").addEventListener("click", function() {
+    console.log("Refresh button clicked")
+    pingAllServices();
+  });
+
+  // Add listener to update buttons if services in storage changes.
+  chrome.storage.onChanged.addListener(function(changes) {
+    if (changes.services) {
+      refreshButtons();
     };
   });
+
+  refreshButtons();
 });

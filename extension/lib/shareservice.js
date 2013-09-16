@@ -235,3 +235,18 @@ function receiveShareServiceRequest(request, sender, sendResponse) {
   };
   sendResponse({status: rc, message: message});
 };
+
+/*
+Function:  pingAllServices
+Params:    None.
+Returns:   Nothing.
+Operation: Sends a ping message to all stored ShareService objects in order to
+           remove any that are no longer active.
+*/
+function pingAllServices() {
+  getShareServiceFromStorage(null, function(services) {
+    for (var key in services) {
+      services[key].sendPingMessage();
+    };
+  });
+};
