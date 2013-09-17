@@ -38,7 +38,7 @@ function ShareService(details) {
   Operation: Returns the key used when the ShareService object is stored in
              Chrome's storage.
   */
-  this.prototype.getKey = function() {
+  ShareService.prototype.getKey = function() {
     return this.extensionId + " " + this.id;
   };
 
@@ -48,11 +48,12 @@ function ShareService(details) {
   Returns:   Nothing.
   Operation: Adds the details of a ShareService object to storage.
   */
-  this.prototype.addToStorage = function(callback) {
+  ShareService.prototype.addToStorage = function(callback) {
     console.log("Storing ShareService", this);
+    var thisservice = this;
     getShareServiceFromStorage(null, function(services) {
-      var key = this.getKey();
-      services[key] = this;
+      var key = thisservice.getKey();
+      services[key] = thisservice;
       chrome.storage.sync.set({"services": services}, callback);
     });
   };
@@ -64,7 +65,7 @@ function ShareService(details) {
   Operation: Removes the ShareService object from the set of ShareService objects
              in storage.
   */
-  this.prototype.removeFromStorage = function() {
+  ShareService.prototype.removeFromStorage = function() {
     console.log("Removing ShareService", this);
     getShareServiceFromStorage(null, function(services) {
       var key = this.getKey;
@@ -90,19 +91,20 @@ function ShareService(details) {
              - favicon - the favicon of the page.
   TODO: [Future Dev] Send the tab's content too.
   */
-  this.prototype.sendShareMessage = function(responseCallback) {
-    chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
-      var tab = tabs[0];
+  ShareService.prototype.sendShareMessage = function(responseCallback) {
+    var thisservice = this;
+    chrome.tabs.getSelected(null, function(tab) {
       var message = {
         type: MESSAGE_TYPES.SHARE_REQUEST,
-        id: this.id,
+        id: thisservice.id,
         url: tab.url,
         title: tab.title,
         favIconUrl: tab.favIconUrl
       };
 
-      console.log("Sending share message", message, this);
-      chrome.runtime.sendMessage(this.extensionId, message, responseCallback);
+      console.log("Sending share message", message, thisservice);
+      chrome.runtime.sendMessage(
+        thisservice.extensionId, message, responseCallback);
     });
   };
 
@@ -115,15 +117,16 @@ function ShareService(details) {
              - type - the message type, which is "ping",
              - id - the ShareService id.
   */
-  this.prototype.sendPingMessage = function() {
+  ShareService.prototype.sendPingMessage = function() {
     var message = {
       type: MESSAGE_TYPES.PING,
       id: this.id,
     };
 
     console.log("Pinging", message, this);
+    var thisservice = this;
     chrome.runtime.sendMessage(this.extensionId, message, function(response) {
-      this.pingMessageResponse(response);
+      thisservice.pingMessageResponse(response);
     });
   };
 
@@ -134,7 +137,7 @@ function ShareService(details) {
   Operation: Checks that the extension pinged is still there and removes it if
              it is not or if its response indicates that it should be removed.
   */
-  this.pingMessageResponse = function(response) {
+  ShareService.pingMessageResponse = function(response) {
     var removeService = false;
     if (chrome.runtime.lastError) {
       if (chrome.runtime.lastError.message == EXT_NOT_FOUND_ERROR) {
@@ -215,15 +218,15 @@ function receiveShareServiceRequest(request, sender, sendResponse) {
 
   if (typeof(details.id) != "string") {
     rc = 0;
-    message = REQUEST_MESSAGES.ID_TYPE_ERROR
+    message = REQUEST_MESSAGES.ID_TYPE_ERROR;
   }
   else if (typeof(details.name) != "string") {
     rc = 0;
-    message = REQUEST_MESSAGES.NAME_TYPE_ERROR
+    message = REQUEST_MESSAGES.NAME_TYPE_ERROR;
   }
   else if (typeof(details.icon) != "string") {
     rc = 0;
-    message = REQUEST_MESSAGES.ICON_TYPE_ERROR
+    message = REQUEST_MESSAGES.ICON_TYPE_ERROR;
   }
   // TODO: add verification of icon url and that id is not duplicate
   // (requires async)
