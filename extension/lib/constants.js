@@ -1,5 +1,5 @@
 // Types of messages sent to external extensions.
-const MESSAGE_TYPE = {
+const MESSAGE_TYPES = {
 	SHARE_REQUEST: "share-request",
 	PING: "ping"
 };
