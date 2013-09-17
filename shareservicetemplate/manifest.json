@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+
+  "name": "ShareService", // Enter the name of the extension here.
+  "version": "2.0",
+
+  "background": {
+    "scripts": ["main.js"],
+    "persistent": false
+  },
+
+  "web_accessible_resources": [
+    // Add the path of the icon the ShareService uses here.
+  ]
+}
