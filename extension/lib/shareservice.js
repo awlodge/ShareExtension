@@ -67,8 +67,9 @@ function ShareService(details) {
   */
   ShareService.prototype.removeFromStorage = function() {
     console.log("Removing ShareService", this);
+    var thisservice = this;
     getShareServiceFromStorage(null, function(services) {
-      var key = this.getKey;
+      var key = thisservice.getKey();
       delete services[key];
       chrome.storage.sync.set({"services": services})
     });
