@@ -13,7 +13,9 @@
     "scripts": [
       "lib/background.js",
       "lib/constants.js",
-      "lib/shareservice.js"
+      "lib/shareservice.js",
+      "lib/facebookservice.js",
+      "lib/twitterservice.js"
     ],
     "persistent": false
   },
