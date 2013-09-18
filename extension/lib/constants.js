@@ -37,3 +37,7 @@ const RESPONSE_MESSAGE_TIMEOUT = 2000;
 const DEFAULT_COLOR = "#33b5e5";
 const DEFAULT_COLOR_TRANSLUCENT = "rgba(51, 181, 229, 0.6)";
 const BACKGROUND_COLOR = "white";
+
+// Object containing the set of built-in ShareServices. It is added to by separate
+// JavaScript files for each service.
+var builtInServices = {};
