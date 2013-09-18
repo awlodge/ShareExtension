@@ -27,7 +27,7 @@ Operation: Called when a message from an external extension is received. Verifie
            that the extension is the Share Extension and that it is a share
            request, then handles the share request.
 */
-function receiveShareRequest(message, sender) {
+function receiveShareRequest(message, sender, sendResponse) {
   if (sender.id == SHARE_EXTENSION_ID) {
   	if (message.type == "share-request") {
   		handleShareRequest(message, function(responseMessage) {
