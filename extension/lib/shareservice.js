@@ -179,10 +179,10 @@ function getShareServiceFromStorage(details, callback) {
       };
     }
     else {
-      console.log("Getting ShareService: " + id);
+      console.log("Getting ShareService: " + details.id);
       var key = details.extensionId + " " + (details.id || details.extensionId);
       if (obj.services[key] == undefined) {
-        console.warn("ShareService not found: " + id);
+        console.warn("ShareService not found: " + details.id);
         var returnObject = undefined;
       }
       else {
