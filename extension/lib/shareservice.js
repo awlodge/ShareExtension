@@ -229,15 +229,39 @@ function receiveShareServiceRequest(request, sender, sendResponse) {
     rc = 0;
     message = REQUEST_MESSAGES.ICON_TYPE_ERROR;
   }
-  // TODO: add verification of icon url and that id is not duplicate
-  // (requires async)
+  else {
+    var icon_request = new XMLHttpRequest();
+    icon_request.open("GET", details.icon, false);
+    try {
+      icon_request.send();
+    }
+    catch(err) {
+      if (err.name != "NetworkError") {
+        throw err;
+      };
+    };
 
-  if (rc == 1) {
-    var service = new ShareService(details);
-    service.addToStorage();
-    message = REQUEST_MESSAGES.SUCCESS;
+    if (icon_request.status != 200) {
+      rc = 0;
+      message = REQUEST_MESSAGES.ICON_NOT_FOUND;
+    };
   };
-  sendResponse({status: rc, message: message});
+
+  getShareServiceFromStorage(details, function(service) {
+    if (service) {
+      rc = 0;
+      message = REQUEST_MESSAGES.ID_NOT_UNIQUE;
+    };
+
+    if (rc == 1) {
+      var service = new ShareService(details);
+      service.addToStorage();
+      message = REQUEST_MESSAGES.SUCCESS;
+    };
+    sendResponse({status: rc, message: message});
+  });
+
+  return true;
 };
 
 /*
