@@ -31,6 +31,9 @@ function ShareService(details) {
   this.icon = details.icon;
   this.extensionId = details.extensionId;
 
+  // Needed to identify the service in storage.
+  this.isShareService = true;
+
   /*
   Function:  getKey
   Params:    None.
@@ -50,29 +53,21 @@ function ShareService(details) {
   */
   ShareService.prototype.addToStorage = function(callback) {
     console.log("Storing ShareService", this);
-    var thisservice = this;
-    getShareServiceFromStorage(null, function(services) {
-      var key = thisservice.getKey();
-      services[key] = thisservice;
-      chrome.storage.sync.set({"services": services}, callback);
-    });
+    var obj = {};
+    obj[this.getKey()] = this;
+    chrome.storage.sync.set(obj, callback);
   };
 
   /*
   Function:  removeFromStorage
-  Params:    None.
+  Params:    - callback - optional function to be called when the removal is done.
   Returns:   Nothing.
   Operation: Removes the ShareService object from the set of ShareService objects
              in storage.
   */
-  ShareService.prototype.removeFromStorage = function() {
+  ShareService.prototype.removeFromStorage = function(callback) {
     console.log("Removing ShareService", this);
-    var thisservice = this;
-    getShareServiceFromStorage(null, function(services) {
-      var key = thisservice.getKey();
-      delete services[key];
-      chrome.storage.sync.set({"services": services})
-    });
+    chrome.storage.sync.remove(this.getKey(), callback);
   };
 
   /*
@@ -121,7 +116,7 @@ function ShareService(details) {
   ShareService.prototype.sendPingMessage = function() {
     var message = {
       type: MESSAGE_TYPES.PING,
-      id: this.id,
+      id: this.id
     };
 
     console.log("Pinging", message, this);
@@ -171,22 +166,31 @@ Operation: Retrieves a specified ShareService object from storage and calls a
            not found, the callback will be called with no argument.
 */
 function getShareServiceFromStorage(details, callback) {
-  chrome.storage.sync.get("services", function(obj) {
+  if (details != null) {
+    var key = details.extensionId + " " + (details.id || details.extensionId);
+  }
+  else {
+    var key = null;
+  };
+
+  chrome.storage.sync.get(key, function(obj) {
     if (details == null) {
       var returnObject = {};
-      for (var key in obj.services) {
-        returnObject[key] = new ShareService(obj.services[key]);
+      for (var serviceKey in obj) {
+        if ((obj[serviceKey] != undefined) && (obj[serviceKey].isShareService)) {
+          returnObject[serviceKey] = new ShareService(obj[serviceKey]);
+        };
       };
     }
     else {
       console.log("Getting ShareService: " + details.id);
-      var key = details.extensionId + " " + (details.id || details.extensionId);
-      if (obj.services[key] == undefined) {
+
+      if ((obj[key] == undefined) || (!obj[key].isShareService)) {
         console.warn("ShareService not found: " + details.id);
         var returnObject = undefined;
       }
       else {
-        var returnObject = new ShareService(obj.services[key]);
+        var returnObject = new ShareService(obj[key]);
       };
     };
 

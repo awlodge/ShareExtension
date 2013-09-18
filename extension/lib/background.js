@@ -3,13 +3,12 @@ Function:  onInit
 Params:    - details - object containing details of why function was called.
 Returns:   Nothing.
 Operation: Called when the extension is installed, updated or Chrome is updated.
-           When the extension is installed, it adds the "services" object to
-           Chrome's storage. Adds the alarm to ping the services periodically.
+           When the extension is installed, Ads the alarm to ping the services
+           periodically.
 */
 function onInit(details) {
   if (details.reason == "install") {
   	console.log("Extension installed.");
-  	chrome.storage.sync.set({"services": {}});
     chrome.alarms.create(PING_ALARM_NAME, {periodInMinutes: PING_ALARM_PERIOD});
   };
 };
