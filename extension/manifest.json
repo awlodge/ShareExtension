@@ -3,7 +3,7 @@
 
   "name": "Share",
   "description": "Extension allowing simple extensible one-click sharing of a page from the browser.",
-  "version": "0.0",
+  "version": "1.0",
 
   "icons": {
     "48": "icons/icon.png"
