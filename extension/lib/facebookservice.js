@@ -44,7 +44,7 @@ Operation: Opens the Facebook Share Dialog in a popup, with the received page as
 */
 facebookService.handleShareRequest = function(message, callback) {
 	var url = facebookService.SHARE_DIALOG_URL + message.url;
-  chrome.windows.create({type: "detached_panel", url: url});
+  chrome.windows.create({type: "popup", url: url, width: 600});
 };
 
 document.addEventListener("DOMContentLoaded", function() {
