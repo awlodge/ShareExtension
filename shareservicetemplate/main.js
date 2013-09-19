@@ -1,17 +1,19 @@
 // String id of the Share Extension extension.
 const SHARE_EXTENSION_ID = "";
 
+var shareService = {};
+
 // Enter the name and path of the icon for the service here.
-const SHARE_SERVICE_NAME = "";
-const SHARE_SERVICE_ICON = "";
+shareService.SHARE_SERVICE_NAME = "";
+shareService.SHARE_SERVICE_ICON = "";
 
 /*
-Function:  setUpShareService
+Function:  setUp
 Params:    - details - object containing the properties of the new ShareService.
 Returns:   Nothing.
 Operation: Sends a request for a new ShareService to the Share Extension.
 */
-function setUpShareService(details) {
+shareService.setUp = function(details) {
   chrome.runtime.sendMessage(SHARE_EXTENSION_ID, details, function(response) {
   	console.log(response.status, response.message);
   });
@@ -27,10 +29,10 @@ Operation: Called when a message from an external extension is received. Verifie
            that the extension is the Share Extension and that it is a share
            request, then handles the share request.
 */
-function receiveShareRequest(message, sender, sendResponse) {
+shareService.receiveShareRequest = function(message, sender, sendResponse) {
   if (sender.id == SHARE_EXTENSION_ID) {
   	if (message.type == "share-request") {
-  		handleShareRequest(message, function(responseMessage) {
+  		shareService.handleShareRequest(message, function(responseMessage) {
   			if (responseMessage) {
   				sendResponse({message: responseMessage});
   			};
@@ -51,7 +53,7 @@ Returns:   Nothing.
 Operation: Use this function to handle a share request that is received and send a
            message back to the share extension if required.
 */
-function handleShareRequest(message, callback) {
+shareService.handleShareRequest = function(message, callback) {
 	// Enter handling code here.
 	// If required, call the callback with a response message when complete.
 	return;
@@ -63,8 +65,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
 			name: SHARE_SERVICE_NAME,
 			icon: chrome.runtime.getUrl(SHARE_SERVICE_ICON)
 		};
-		setUpShareService(serviceDetails);
+		shareService.setUp(serviceDetails);
 	};
 })
 
-chrome.runtime.onMessageExternal.addListener(receiveShareRequest);
+chrome.runtime.onMessageExternal.addListener(shareService.receiveShareRequest);
