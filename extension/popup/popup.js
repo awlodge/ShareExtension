@@ -122,10 +122,17 @@ function displayResponseMessage(response) {
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-  // Add listeners for refresh and options buttons (TODO: options)
+  // Add listeners for refresh and options buttons
   document.getElementById("refresh").buttonPress(function() {
     console.log("Refresh button clicked");
     pingAllServices();
+  });
+  document.getElementById("options").buttonPress(function() {
+    console.log("Options button clicked");
+    chrome.tabs.create(
+      {url: "/options/options.html"},
+      function(tab) {chrome.windows.update(tab.windowId,{"focused": true});}
+    );
   });
 
   // Add listener to update buttons if services in storage changes.

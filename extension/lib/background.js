@@ -1,3 +1,7 @@
+// Object containing the set of built-in ShareServices. It is added to by separate
+// JavaScript files for each service.
+var builtInServices = {};
+
 /*
 Function:  onInit
 Params:    - details - object containing details of why function was called.

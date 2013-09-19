@@ -27,6 +27,8 @@
     "default_icon": "icons/icon.png"
   },
 
+  "options_page": "options/options.html",
+
   "permissions": [
     "activeTab",
     "alarms",
