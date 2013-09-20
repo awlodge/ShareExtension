@@ -32,6 +32,7 @@ Operation: Called when a message from an external extension is received. Verifie
 shareService.receiveShareRequest = function(message, sender, sendResponse) {
   if (sender.id == SHARE_EXTENSION_ID) {
   	if (message.type == "share-request") {
+      console.log("Received share resquest", message, sender);
   		shareService.handleShareRequest(message, function(responseMessage) {
   			if (responseMessage) {
   				sendResponse({message: responseMessage});
@@ -62,8 +63,8 @@ shareService.handleShareRequest = function(message, callback) {
 chrome.runtime.onInstalled.addListener(function(details) {
 	if (details.reason = "install") {
 		var serviceDetails = {
-			name: SHARE_SERVICE_NAME,
-			icon: chrome.runtime.getUrl(SHARE_SERVICE_ICON)
+			name: shareService.SHARE_SERVICE_NAME,
+			icon: chrome.runtime.getURL(shareService.SHARE_SERVICE_ICON)
 		};
 		shareService.setUp(serviceDetails);
 	};
