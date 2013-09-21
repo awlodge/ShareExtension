@@ -133,7 +133,7 @@ function ShareService(details) {
   Operation: Checks that the extension pinged is still there and removes it if
              it is not or if its response indicates that it should be removed.
   */
-  ShareService.pingMessageResponse = function(response) {
+  ShareService.prototype.pingMessageResponse = function(response) {
     var removeService = false;
     if (chrome.runtime.lastError) {
       if (chrome.runtime.lastError.message == EXT_NOT_FOUND_ERROR) {
