@@ -128,8 +128,9 @@ function ShareService(details) {
 
   /*
   Function:  sendShareMessage
-  Params:    - url - the URL of the page to be shared.
-             - title - the title of the page to be shared.
+  Params:    - info - object containing the information to be shared. The object
+             must contain the url field, indicating the URL to be shared, and may
+             also contain title and favicon fields.
              - responseCallback - optional function to be called on a response to
              the message. The function should take a response object as its
              parameter. The response will have two properties, a boolean "success"
@@ -141,19 +142,25 @@ function ShareService(details) {
              - type - the message type, which is "share-request",
              - id - the ShareService id,
              - url - the URL of the page,
-             - title - the title of the page,
+             - title - the title of the page, if present,
+             - favicon - the page's faviccon, if present.
   */
-  ShareService.prototype.sendShareMessage = function(
-                                               url, title, responseCallback) {
+  ShareService.prototype.sendShareMessage = function(info, responseCallback) {
     var message = {
       type: MESSAGE_TYPES.SHARE_REQUEST,
       id: this.id,
-      url: url,
-      title: title,
+      url: info.url,
+      title: info.title,
+      favicon: info.favicon
     };
 
     console.log("Sending share message", message, this);
-    chrome.runtime.sendMessage(this.extensionId, message, responseCallback);
+    if (responseCallback) {
+      chrome.runtime.sendMessage(this.extensionId, message, responseCallback);
+    }
+    else {
+      chrome.runtime.sendMessage(this.extensionId, message);
+    };
   };
 
   /*
@@ -168,7 +175,12 @@ function ShareService(details) {
   ShareService.prototype.sendShareMessageFromTab = function(responseCallback) {
     var thisservice = this;
     chrome.tabs.getSelected(null, function(tab) {
-      thisservice.sendShareMessage(tab.url, tab.title, responseCallback);
+      var message = {
+        url: tab.url,
+        title: tab.title,
+        favicon: tab.favIconUrl
+      }
+      thisservice.sendShareMessage(message, responseCallback);
     });
   };
 
@@ -257,7 +269,7 @@ function getShareServiceFromStorage(details, callback) {
       };
     }
     else {
-      console.log("Getting ShareService: " + details.id);
+      console.log("Getting ShareService: " + key);
 
       if ((obj[key] == undefined) || (!obj[key].isShareService)) {
         console.warn("ShareService not found: " + details.id);

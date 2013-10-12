@@ -17,16 +17,21 @@ function onInit(details) {
 
     chrome.alarms.create(PING_ALARM_NAME, {periodInMinutes: PING_ALARM_PERIOD});
 
-    chrome.contextMenus.create({
-      id: CONTEXT_MENU_ID,
-      title: "Share...",
-      contexts: ["link"]
-    });
-
     for (var key in builtInServices) {
       builtInServices[key].add();
     };
   };
+
+  chrome.contextMenus.create({
+    id: CONTEXT_MENU_ID,
+    title: "Share...",
+    contexts: ["link"]
+  });
+  getShareServiceFromStorage(null, function(services) {
+    for (var key in services) {
+      services[key].addContextMenu();
+    };
+  });
 };
 
 /*
@@ -43,8 +48,26 @@ function onAlarm(alarm) {
   };
 };
 
+/*
+Function:  onContextMenuClicked
+Params:    - info - inforrmation about the item clicked and the context where the
+           click happened.
+Returns:   Nothing
+Operation: Called when one of the extension's context menu buttons is clicked.
+           Determines which ShareService was clicked and sends a share request
+           message to that service.
+*/
+function onContextMenuClicked(info) {
+  console.log("Context menu button clicked.", info);
+  getShareServiceFromStorage({fullKey: info.menuItemId}, function(service) {
+    service.sendShareMessage({url: info.linkUrl});
+  });
+};
+
 document.addEventListener("DOMContentLoaded", function() {
   chrome.runtime.onInstalled.addListener(onInit);
   chrome.runtime.onMessageExternal.addListener(receiveShareServiceRequest);
+  chrome.runtime.onMessage.addListener(function(s) {console.log(s);})
   chrome.alarms.onAlarm.addListener(onAlarm);
+  chrome.contextMenus.onClicked.addListener(onContextMenuClicked);
 });
