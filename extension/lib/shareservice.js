@@ -223,7 +223,8 @@ function ShareService(details) {
 /*
 Function:  getShareServiceFromStorage
 Params:    - details - object containing the id and extensionId of the
-           ShareService object to retrieve from storage. The extensionId field is
+           ShareService object to retrieve from storage. If the fullKey field is
+           specified, this is the key used. Otherwise the extensionId field is
            required, if the id field is omitted it defaults to the extensionId.
            Set to null to retrieve all ShareService objectss.
            - callback - function to call on retrieved ShareService object or
@@ -235,7 +236,12 @@ Operation: Retrieves a specified ShareService object from storage and calls a
 */
 function getShareServiceFromStorage(details, callback) {
   if (details != null) {
-    var key = details.extensionId + " " + (details.id || details.extensionId);
+    if (details.fullKey != undefined) {
+      var key = details.fullKey;
+    }
+    else {
+      var key = details.extensionId + " " + (details.id || details.extensionId);
+    };
   }
   else {
     var key = null;
