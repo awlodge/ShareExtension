@@ -50,7 +50,7 @@ function createShareButton(service) {
   cell.appendChild(text);
 
   cell.buttonPress(function() {
-    service.sendShareMessage(displayResponseMessage);
+    service.sendShareMessageFromTab(displayResponseMessage);
   });
 
   return cell;

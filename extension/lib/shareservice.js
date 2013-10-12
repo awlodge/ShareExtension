@@ -25,6 +25,7 @@ Operation: Constructor function for the ShareService object. This function shoul
            - removeContextMenu - removes the service's context menu item.
            - sendShareMessage - sends a message with a share request to the
            service's extension.
+           - sendShareMessageFromTab - sends a share request from the current tab.
            - sendPingMessage - checks the service's extension is still with us.
            - pingMessageResponse - called when a response from a ping message is
            received.
@@ -127,35 +128,47 @@ function ShareService(details) {
 
   /*
   Function:  sendShareMessage
-  Params:    - responseCallback - optional function to be called on a response to
+  Params:    - url - the URL of the page to be shared.
+             - title - the title of the page to be shared.
+             - responseCallback - optional function to be called on a response to
              the message. The function should take a response object as its
              parameter. The response will have two properties, a boolean "success"
              indicating whether or not the message was successfully dealt with,
              and a string "message" which is a response to display to the user.
   Returns:   Nothing.
-  Operation: Gets the active tab and sends a message to the extension of the
-             given share service. The message contains the following fields:
+  Operation: Sends a message to the extension of the given share service. The
+             message contains the following fields:
              - type - the message type, which is "share-request",
              - id - the ShareService id,
              - url - the URL of the page,
              - title - the title of the page,
-             - favicon - the favicon of the page.
+  */
+  ShareService.prototype.sendShareMessage = function(
+                                               url, title, responseCallback) {
+    var message = {
+      type: MESSAGE_TYPES.SHARE_REQUEST,
+      id: this.id,
+      url: url,
+      title: title,
+    };
+
+    console.log("Sending share message", message, this);
+    chrome.runtime.sendMessage(this.extensionId, message, responseCallback);
+  };
+
+  /*
+  Function:  sendShareMessageFromTab
+  Params:    - responseCallback - optional function to be called on a response to
+             the message. See the method sendShareMessage for details.
+  Returns:   Nothing.
+  Operation: Gets the active tab and sends a message to the extension of the given
+             share service.
   TODO: [Future Dev] Send the tab's content too.
   */
-  ShareService.prototype.sendShareMessage = function(responseCallback) {
+  ShareService.prototype.sendShareMessageFromTab = function(responseCallback) {
     var thisservice = this;
     chrome.tabs.getSelected(null, function(tab) {
-      var message = {
-        type: MESSAGE_TYPES.SHARE_REQUEST,
-        id: thisservice.id,
-        url: tab.url,
-        title: tab.title,
-        favIconUrl: tab.favIconUrl
-      };
-
-      console.log("Sending share message", message, thisservice);
-      chrome.runtime.sendMessage(
-        thisservice.extensionId, message, responseCallback);
+      thisservice.sendShareMessage(tab.url, tab.title, responseCallback);
     });
   };
 
