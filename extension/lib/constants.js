@@ -26,6 +26,9 @@ const REQUEST_MESSAGES = {
 	ICON_NOT_FOUND: "The given icon could not be found."
 };
 
+// Id for the parent context menu for the extension.
+const CONTEXT_MENU_ID = "044djfeimvor49edf40i0ofefpejjcke2435efk8fkjjf";
+
 // Name and period parameters for the alarm the pings the services periodically.
 const PING_ALARM_NAME = "ping-alarm";
 const PING_ALARM_PERIOD = 30;

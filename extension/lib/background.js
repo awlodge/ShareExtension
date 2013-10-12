@@ -8,14 +8,23 @@ Params:    - details - object containing details of why function was called.
 Returns:   Nothing.
 Operation: Called when the extension is installed, updated or Chrome is updated.
            When the extension is installed, adds the alarm to ping the services
-           periodically. Adds the bulit-in services to the services in storage.
+           periodically. Adds menu to context menu. Adds the bulit-in services to
+           the services in storage.
 */
 function onInit(details) {
   if (details.reason == "install") {
   	console.log("Extension installed.");
+
     chrome.alarms.create(PING_ALARM_NAME, {periodInMinutes: PING_ALARM_PERIOD});
+
+    chrome.contextMenus.create({
+      id: CONTEXT_MENU_ID,
+      title: "Share...",
+      contexts: ["link"]
+    });
+
     for (var key in builtInServices) {
-      builtInServices[key].addToStorage();
+      builtInServices[key].add();
     };
   };
 };

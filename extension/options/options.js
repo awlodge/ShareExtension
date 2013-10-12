@@ -59,7 +59,7 @@ function addService(service) {
     removeService(service);
   };
 
-  service.addToStorage();
+  service.add();
 };
 
 /*
@@ -77,7 +77,7 @@ function removeService(service) {
     addService(service);
   };
 
-  service.removeFromStorage();
+  service.remove();
 };
 
 document.addEventListener("DOMContentLoaded", function() {

@@ -15,10 +15,14 @@ Operation: Constructor function for the ShareService object. This function shoul
            identify the servive.
            - extensionId - string. The id of the extension defining the service.
            Methods:
+           - add - sets up the ShareService.
+           - remove - tears down the ShareService.
            - getKey - returns the key used to store the object.
            - addToStorage - stores the ShareService object in Chrome's storage.
            - removeFromStorage - removes the copy of the object from
            Chrome's storage.
+           - addContextMenu - adds a context menu item for the ShareService.
+           - removeContextMenu - removes the service's context menu item.
            - sendShareMessage - sends a message with a share request to the
            service's extension.
            - sendPingMessage - checks the service's extension is still with us.
@@ -33,6 +37,30 @@ function ShareService(details) {
 
   // Needed to identify the service in storage.
   this.isShareService = true;
+
+  /*
+  Function:  add
+  Params:    None.
+  Returns:   Nothing.
+  Operation: Function to add the ShareService. Adds it to local storage and sets
+             up a context menu item for the service.
+  */
+  ShareService.prototype.add = function() {
+    this.addContextMenu();
+    this.addToStorage();
+  };
+
+  /*
+  Function:  remove
+  Params:    None.
+  Returns:   Nothing.
+  Operation: Function to remove the ShareService. Removes it from local storage
+             and removes the service's context menu.
+  */
+  ShareService.prototype.remove = function() {
+    this.removeContextMenu();
+    this.removeFromStorage();
+  };
 
   /*
   Function:  getKey
@@ -68,6 +96,33 @@ function ShareService(details) {
   ShareService.prototype.removeFromStorage = function(callback) {
     console.log("Removing ShareService", this);
     chrome.storage.sync.remove(this.getKey(), callback);
+  };
+
+  /*
+  Function:  addContextMenu
+  Params:    None.
+  Returns:   Nothing.
+  Operation: Adds a context menu item for this ShareService. The context menu will
+             appear when a link is right-clicked on and will provide the same
+             sharing options as the browser popup.
+  */
+  ShareService.prototype.addContextMenu = function() {
+    chrome.contextMenus.create({
+      id: this.getKey(),
+      title: this.name,
+      contexts: ["link"],
+      parentId: CONTEXT_MENU_ID
+    });
+  };
+
+  /*
+  Function:  removeContextMenu
+  Params:    None.
+  Returns:   Nothing.
+  Operation: Removes the context menu item for this service.
+  */
+  ShareService.prototype.removeContextMenu = function() {
+    chrome.contextMenus.remove(this.getKey());
   };
 
   /*
@@ -147,7 +202,7 @@ function ShareService(details) {
     };
 
     if (removeService) {
-      this.removeFromStorage();
+      this.remove();
     };
   };
 };
@@ -259,7 +314,7 @@ function receiveShareServiceRequest(request, sender, sendResponse) {
 
     if (rc == 1) {
       var service = new ShareService(details);
-      service.addToStorage();
+      service.add();
       message = REQUEST_MESSAGES.SUCCESS;
     };
     sendResponse({status: rc, message: message});
