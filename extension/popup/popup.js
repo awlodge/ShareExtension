@@ -111,6 +111,7 @@ Operation: Takes a response from the ShareService extension and displays it in a
 */
 function displayResponseMessage(response) {
   if (response) {
+    console.log("Displaying response message", response);
     var message_display = document.createElement("div");
     message_display.setAttribute("id", "message");
     message_display.innerText = response.message;
