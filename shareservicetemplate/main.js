@@ -1,5 +1,5 @@
 // String id of the Share Extension extension.
-const SHARE_EXTENSION_ID = "";
+const SHARE_EXTENSION_ID = "ddkggdeokdhifjghgngemijfjmfpiaja";
 
 var shareService = {};
 
@@ -61,7 +61,7 @@ shareService.handleShareRequest = function(message, callback) {
 };
 
 chrome.runtime.onInstalled.addListener(function(details) {
-	if (details.reason = "install") {
+	if (details.reason == "install") {
 		var serviceDetails = {
 			name: shareService.SHARE_SERVICE_NAME,
 			icon: chrome.runtime.getURL(shareService.SHARE_SERVICE_ICON)
